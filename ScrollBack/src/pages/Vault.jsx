@@ -41,7 +41,7 @@ function ActiveVault({ account }) {
   const { vault, today } = account
   const earned = vault.originalAmount > 0 ? Math.min(100, (vault.releasedAmount / vault.originalAmount) * 100) : 0
   return (
-    <section className="card card--lg" aria-labelledby="active-vault">
+    <section className="card card--lg" aria-labelledby="active-vault" aria-live="polite" aria-atomic="true">
       <div className="card__head">
         <h2 id="active-vault" className="card__title">
           Active lock
@@ -155,7 +155,7 @@ export default function Vault() {
       )}
 
       <div className="grid-2">
-        <section className="card" aria-labelledby="future-title">
+        <section className="card" aria-labelledby="future-title" aria-live="polite" aria-atomic="true">
           <div className="card__head">
             <h2 id="future-title" className="card__title">
               Future Me

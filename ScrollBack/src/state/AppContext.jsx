@@ -2,6 +2,22 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useReducer,
 import confetti from 'canvas-confetti'
 import * as api from '../lib/api/client.js'
 
+const ACCESSIBILITY_KEY = 'scrollback.accessibility.v1'
+
+function readAccessibilityPrefs() {
+  try {
+    const raw = localStorage.getItem(ACCESSIBILITY_KEY)
+    if (!raw) return { reducedMotion: false, highLegibility: false }
+    const parsed = JSON.parse(raw)
+    return {
+      reducedMotion: Boolean(parsed?.reducedMotion),
+      highLegibility: Boolean(parsed?.highLegibility),
+    }
+  } catch {
+    return { reducedMotion: false, highLegibility: false }
+  }
+}
+
 // status: loading -> ready (signed in) | anon (signed out) | error (could not load)
 const initialState = {
   status: 'loading',
@@ -9,6 +25,7 @@ const initialState = {
   error: null,
   toasts: [],
   coinFx: null,
+  accessibility: readAccessibilityPrefs(),
 }
 
 function reducer(state, action) {
@@ -31,6 +48,14 @@ function reducer(state, action) {
       return { ...state, coinFx: action.coinFx }
     case 'COIN_CLEAR':
       return state.coinFx?.id === action.id ? { ...state, coinFx: null } : state
+    case 'ACCESSIBILITY_SET':
+      return {
+        ...state,
+        accessibility: {
+          ...state.accessibility,
+          ...action.partial,
+        },
+      }
     default:
       return state
   }
@@ -41,7 +66,8 @@ let toastId = 0
 let coinId = 0
 
 function fireConfetti() {
-  const colors = ['#C9A24B', '#E2BE6A', '#F4EFE4', '#6FAE8B']
+  if (typeof document !== 'undefined' && document.body.classList.contains('reduce-motion')) return
+  const colors = ['#52B788', '#6AE2AA', '#F4EFE4', '#6FAE8B']
   const base = { colors, disableForReducedMotion: true, zIndex: 100, ticks: 220 }
   confetti({ ...base, particleCount: 70, spread: 70, origin: { y: 0.65 } })
   setTimeout(() => confetti({ ...base, particleCount: 40, spread: 100, origin: { x: 0.15, y: 0.7 }, angle: 60 }), 180)
@@ -94,6 +120,19 @@ export function AppProvider({ children }) {
     load()
   }, [load])
 
+  useEffect(() => {
+    if (typeof document === 'undefined') return undefined
+    const { reducedMotion, highLegibility } = state.accessibility
+    document.body.classList.toggle('reduce-motion', reducedMotion)
+    document.body.classList.toggle('accessible-text', highLegibility)
+    try {
+      localStorage.setItem(ACCESSIBILITY_KEY, JSON.stringify(state.accessibility))
+    } catch {
+      // Ignore storage failures; the UI state still works for this session.
+    }
+    return undefined
+  }, [state.accessibility])
+
   // Runs a mutation, stores the returned account and plays its effects. Errors become toasts
   // and resolve to null so callers can simply check the result.
   const mutate = useCallback(
@@ -118,6 +157,7 @@ export function AppProvider({ children }) {
   const actions = useMemo(
     () => ({
       reload: load,
+      setAccessibility: (partial) => dispatch({ type: 'ACCESSIBILITY_SET', partial }),
       // Auth errors are returned to the form instead of shown as toasts.
       async login(username, password) {
         const { account } = await api.login(username, password)

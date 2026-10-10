@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
-import { Activity, BarChart3, FlaskConical, Landmark, LayoutDashboard, LogOut, Settings } from 'lucide-react'
+import { Activity, BarChart3, Eye, FlaskConical, Landmark, LayoutDashboard, LogOut, Settings } from 'lucide-react'
 import { Logo, ModeBadge } from './Brand.jsx'
+import AccessibilityDrawer from './AccessibilityDrawer.jsx'
 import DemoControls from './DemoControls.jsx'
 import { useApp } from '../state/AppContext.jsx'
 
@@ -14,8 +15,9 @@ const NAV = [
 ]
 
 export default function Shell() {
-  const { account, logout } = useApp()
+  const { account, accessibility, logout, setAccessibility } = useApp()
   const [demoOpen, setDemoOpen] = useState(false)
+  const [accessOpen, setAccessOpen] = useState(false)
 
   return (
     <div className="shell">
@@ -43,6 +45,9 @@ export default function Shell() {
               <ModeBadge mode={account.contract.mode} />
             </div>
           </div>
+          <button type="button" className="btn btn--ghost btn--sm btn--block" onClick={() => setAccessOpen(true)}>
+            <Eye size={16} aria-hidden="true" /> Accessibility
+          </button>
           <button type="button" className="btn btn--ghost btn--sm btn--block" onClick={() => setDemoOpen(true)}>
             <FlaskConical size={16} aria-hidden="true" /> Demo controls
           </button>
@@ -54,9 +59,14 @@ export default function Shell() {
 
       <header className="topbar">
         <Logo size="sm" />
-        <button type="button" className="icon-btn" onClick={() => setDemoOpen(true)} aria-label="Open demo controls">
-          <FlaskConical size={20} aria-hidden="true" />
-        </button>
+        <div className="topbar__actions">
+          <button type="button" className="icon-btn" onClick={() => setAccessOpen(true)} aria-label="Open accessibility settings">
+            <Eye size={20} aria-hidden="true" />
+          </button>
+          <button type="button" className="icon-btn" onClick={() => setDemoOpen(true)} aria-label="Open demo controls">
+            <FlaskConical size={20} aria-hidden="true" />
+          </button>
+        </div>
       </header>
 
       <main id="main" className="shell__main" tabIndex={-1}>
@@ -72,6 +82,15 @@ export default function Shell() {
         ))}
       </nav>
 
+      <AccessibilityDrawer
+        open={accessOpen}
+        onClose={() => setAccessOpen(false)}
+        account={account}
+        reducedMotion={accessibility.reducedMotion}
+        highLegibility={accessibility.highLegibility}
+        onToggleReducedMotion={() => setAccessibility({ reducedMotion: !accessibility.reducedMotion })}
+        onToggleHighLegibility={() => setAccessibility({ highLegibility: !accessibility.highLegibility })}
+      />
       <DemoControls open={demoOpen} onClose={() => setDemoOpen(false)} />
     </div>
   )

@@ -216,9 +216,9 @@ export default function Onboarding() {
   const { saveOnboarding, logout, notify } = useApp()
   const [step, setStep] = useState(0)
   const [contract, setContract] = useState({
-    mode: 'friendly',
+    mode: 'lightFocus',
     apps: ['TikTok', 'Instagram', 'YouTube Shorts'],
-    dailyLimit: MODES.friendly.defaultLimit,
+    dailyLimit: MODES.lightFocus.defaultLimit,
     goalSource: 'duolingo_lesson',
     goalConnected: false,
   })

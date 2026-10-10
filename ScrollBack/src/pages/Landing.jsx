@@ -42,7 +42,7 @@ const PRINCIPLES = [
   {
     icon: Sprout,
     title: 'A grace pass to start',
-    text: `Friendly mode gives you ${MODES.friendly.gracePasses} free warning before anything is locked.`,
+    text: `Light Focus gives you ${MODES.lightFocus.gracePasses} free warning before anything is locked.`,
   },
   {
     icon: LifeBuoy,
@@ -57,6 +57,9 @@ export default function Landing() {
 
   return (
     <div className="landing">
+      <div className="landing__bg" aria-hidden="true">
+        <Starfield />
+      </div>
       <header className="landing__nav">
         <Logo />
         <nav className="landing__nav-links" aria-label="Account">
@@ -79,7 +82,6 @@ export default function Landing() {
 
       <main>
         <section className="hero">
-          <Starfield />
           <div className="hero__inner">
             <p className="eyebrow">A gentler way to build a learning habit</p>
             <h1 className="hero__title">Scroll less. Learn more. Earn it back.</h1>
@@ -95,18 +97,6 @@ export default function Landing() {
               <a href="#how" className="btn btn--outline btn--lg">
                 How it works
               </a>
-            </div>
-
-            <div className="hero__card" role="img" aria-label="Example Vault: 9 pounds still locked, 3 pounds earned back, 6 days to go">
-              <div className="hero__card-row">
-                <span className="hero__card-label">Vault</span>
-                <span className="badge badge--friendly">Friendly</span>
-              </div>
-              <p className="hero__card-amount">£9.00 locked</p>
-              <div className="meter" aria-hidden="true">
-                <span className="meter__fill" style={{ width: '25%' }} />
-              </div>
-              <p className="hero__card-foot">£3.00 earned back · 6 days to go · 1 lesson away from £1.50</p>
             </div>
           </div>
         </section>

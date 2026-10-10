@@ -9,9 +9,9 @@ export const STARTING_BALANCES = { main: 250, vault: 0, futureMe: 0 }
 export const AFFORDABILITY_CAP = 0.25
 
 export const MODES = {
-  friendly: {
-    id: 'friendly',
-    label: 'Friendly',
+  lightFocus: {
+    id: 'lightFocus',
+    label: 'Light Focus',
     tagline: 'A gentle nudge.',
     minAmount: 1,
     maxAmount: 5,
@@ -23,9 +23,9 @@ export const MODES = {
     maxOverage: 90,
     gracePasses: 1,
   },
-  strict: {
-    id: 'strict',
-    label: 'Strict',
+  deepFocus: {
+    id: 'deepFocus',
+    label: 'Deep Focus',
     tagline: 'Serious commitment.',
     minAmount: 5,
     maxAmount: 20,

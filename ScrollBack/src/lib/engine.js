@@ -484,7 +484,7 @@ export function hardshipExit(state) {
 /* ------------------------------------------------------------------ */
 
 function validateContract(c) {
-  if (!MODES[c.mode]) throw new ApiError('Choose Friendly or Strict mode.')
+  if (!MODES[c.mode]) throw new ApiError('Choose Light Focus or Deep Focus mode.')
   if (!Array.isArray(c.apps) || c.apps.length === 0) throw new ApiError('Pick at least one app to monitor.')
   if (!GOALS[c.goalSource]) throw new ApiError('Choose a learning goal.')
   const rules = MODES[c.mode]
@@ -501,7 +501,7 @@ function seedHistory(d) {
   const { mode, dailyLimit, goalSource } = d.contract
   const today = d.today.date
   const startDate = addDays(today, -14)
-  const overage = mode === 'strict' ? 10 : 14
+  const overage = mode === 'deepFocus' ? 10 : 14
   const penalty = calculatePenalty(mode, dailyLimit, dailyLimit + overage, 0)
   const lockDays = penalty.lockDays
   const slice = ceil2(penalty.amount / lockDays)

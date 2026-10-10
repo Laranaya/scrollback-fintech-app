@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowRight, CheckCircle2, Flame, Landmark, Loader2, PiggyBank, Shield, Wallet } from 'lucide-react'
+import { ArrowRight, CheckCircle2, Flame, Loader2, Shield } from 'lucide-react'
 import AnimatedNumber from '../components/AnimatedNumber.jsx'
 import ProgressRing from '../components/ProgressRing.jsx'
 import { AppIcon, GoalIcon, ModeBadge } from '../components/Brand.jsx'
@@ -11,13 +11,10 @@ import { gracePassesLeft, vaultEndDate } from '../lib/engine.js'
 import { formatGBP, formatMinutes, pluralise } from '../lib/format.js'
 import { formatLongDate, formatShortDate } from '../lib/dates.js'
 
-function BalanceCard({ id, label, icon: Icon, value, note, tone }) {
+function BalanceCard({ id, label, value, note }) {
   return (
-    <section className={`balance balance--${tone}`} data-balance={id} aria-label={label}>
+    <section className="balance" data-balance={id} aria-label={label} aria-live="polite" aria-atomic="true">
       <div className="balance__head">
-        <span className="balance__icon">
-          <Icon size={18} aria-hidden="true" />
-        </span>
         <h2 className="balance__label">{label}</h2>
       </div>
       <p className="balance__amount">
@@ -83,10 +80,16 @@ function TodayCard({ account }) {
 function GoalCard({ account }) {
   const { completeGoal } = useApp()
   const [busy, setBusy] = useState(false)
-  const { contract, today, vault } = account
-  const goal = GOALS[contract.goalSource]
+  const { contract = {}, today = {}, vault } = account ?? {}
+  const goal = GOALS?.[contract?.goalSource] ?? {
+    id: 'learning-goal',
+    name: 'Learning Goal',
+    label: 'Learning Goal',
+    requirement: 'Complete your learning goal for today',
+  }
 
   async function markDone() {
+    if (!contract?.goalSource) return
     setBusy(true)
     await completeGoal(contract.goalSource)
     setBusy(false)
@@ -101,11 +104,11 @@ function GoalCard({ account }) {
       </div>
       <div className="goal__row">
         <span className="goal__icon">
-          <GoalIcon source={goal.id} size={24} />
+          <GoalIcon source={goal?.id || 'learning-goal'} size={24} />
         </span>
         <div>
-          <p className="goal__name">{goal.requirement}</p>
-          <p className="goal__source">on {goal.name}</p>
+          <p className="goal__name">{goal?.requirement || 'Complete your learning goal for today'}</p>
+          <p className="goal__source">on {goal?.name || 'Learning Goal'}</p>
         </div>
       </div>
       {today.goalDone ? (
@@ -121,11 +124,11 @@ function GoalCard({ account }) {
               ? `Finish this to release ${formatGBP(Math.min(vault.dailySlice, vault.lockedAmount))} from your Vault.`
               : 'Nothing is locked, so this just keeps your streak going.'}
           </p>
-          <button type="button" className="btn btn--gold btn--block" onClick={markDone} disabled={busy}>
+          <button type="button" className="btn btn--gold btn--block" onClick={markDone} disabled={busy || !contract?.goalSource}>
             {busy ? <Loader2 className="spin" size={18} aria-hidden="true" /> : null}
-            {busy ? 'Checking\u2026' : `I finished my ${contract.goalSource === 'github_pr' ? 'pull request' : contract.goalSource === 'linkedin_module' ? 'module' : 'lesson'}`}
+            {busy ? 'Checking\u2026' : `I finished my ${contract?.goalSource === 'github_pr' ? 'pull request' : contract?.goalSource === 'linkedin_module' ? 'module' : 'lesson'}`}
           </button>
-          <p className="hint hint--left">In a live setup {goal.name} tells ScrollBack for you. This button stands in for that.</p>
+          <p className="hint hint--left">In a live setup {goal?.name || 'Learning Goal'} tells ScrollBack for you. This button stands in for that.</p>
         </>
       )}
     </section>
@@ -136,7 +139,7 @@ function VaultCard({ account }) {
   const { vault } = account
   if (!vault) {
     return (
-      <section className="card" aria-labelledby="vault-title">
+      <section className="card" aria-labelledby="vault-title" aria-live="polite" aria-atomic="true">
         <div className="card__head">
           <h2 id="vault-title" className="card__title">
             Vault
@@ -152,7 +155,7 @@ function VaultCard({ account }) {
   }
   const earned = vault.originalAmount > 0 ? Math.min(100, (vault.releasedAmount / vault.originalAmount) * 100) : 0
   return (
-    <section className="card" aria-labelledby="vault-title">
+    <section className="card" aria-labelledby="vault-title" aria-live="polite" aria-atomic="true">
       <div className="card__head">
         <h2 id="vault-title" className="card__title">
           Vault
@@ -183,18 +186,19 @@ function VaultCard({ account }) {
 
 export default function Dashboard() {
   const { account } = useApp()
-  const { balances, vault, contract, streak } = account
+  const { balances = {}, vault, contract = {}, streak = 0 } = account ?? {}
+  const modeConfig = MODES?.[contract?.mode] ?? { label: 'Focus' }
   const graceLeft = gracePassesLeft(account)
 
   return (
     <div className="page">
       <header className="page__head">
         <div>
-          <p className="eyebrow">{formatLongDate(account.today.date)}</p>
-          <h1 className="page__title">Hello, {account.user.username}</h1>
+          <p className="eyebrow">{formatLongDate(account?.today?.date || new Date())}</p>
+          <h1 className="page__title">Hello, {account?.user?.username || 'friend'}</h1>
         </div>
         <div className="page__chips">
-          <ModeBadge mode={contract.mode} />
+          <ModeBadge mode={contract?.mode} />
           <span className="pill" title="Consecutive days with your goal completed">
             <Flame size={16} aria-hidden="true" /> {pluralise(streak, 'day')} streak
           </span>
@@ -202,19 +206,17 @@ export default function Dashboard() {
       </header>
 
       <div className="balances">
-        <BalanceCard id="main" label="Main balance" icon={Wallet} value={balances.main} tone="main" note="Free to use. Always yours." />
+        <BalanceCard id="main" label="Main balance" value={balances.main} note="Free to use. Always yours." />
         <BalanceCard
           id="vault"
           label="Vault"
-          icon={Landmark}
           value={balances.vault}
-          tone="vault"
           note={vault ? `Locked until ${formatShortDate(vaultEndDate(account))}` : 'Nothing locked right now'}
         />
-        <BalanceCard id="future" label="Future Me" icon={PiggyBank} value={balances.futureMe} tone="future" note="Savings from unearned slices" />
+        <BalanceCard id="future" label="Future Me" value={balances.futureMe} note="Savings from unearned slices" />
       </div>
 
-      {contract.mode === 'friendly' && graceLeft > 0 ? (
+      {contract?.mode === 'lightFocus' && graceLeft > 0 ? (
         <p className="notice notice--info" role="note">
           <Shield size={18} aria-hidden="true" />
           You have {graceLeft} free grace pass. The first time you go over, you&apos;ll get a warning instead of a lock.
@@ -227,7 +229,7 @@ export default function Dashboard() {
       </div>
       <VaultCard account={account} />
       <p className="hint hint--left">
-        {MODES[contract.mode].label} mode · limit {contract.dailyLimit} min a day. Change this any time in{' '}
+        {modeConfig?.label || 'Focus'} mode · limit {contract?.dailyLimit ?? 0} min a day. Change this any time in{' '}
         <Link to="/app/settings">Settings</Link>.
       </p>
     </div>

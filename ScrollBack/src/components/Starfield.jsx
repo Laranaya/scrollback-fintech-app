@@ -7,7 +7,6 @@ export default function Starfield() {
   useEffect(() => {
     const canvas = canvasRef.current
     const ctx = canvas.getContext('2d')
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     let width = 0
     let height = 0
     let stars = []
@@ -15,6 +14,9 @@ export default function Starfield() {
     let raf = 0
     let last = performance.now()
     let nextShooter = last + 2500
+    const media = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const prefersReduced = () => media.matches || document.body.classList.contains('reduce-motion')
+    let reduce = prefersReduced()
 
     function resize() {
       const dpr = Math.min(window.devicePixelRatio || 1, 2)
@@ -41,7 +43,7 @@ export default function Starfield() {
 
       for (const s of stars) {
         const alpha = reduce ? 0.65 : 0.3 + 0.7 * (0.5 + 0.5 * Math.sin((now / 1000) * s.speed + s.phase))
-        ctx.fillStyle = s.gold ? `rgba(226,190,106,${alpha})` : `rgba(244,239,228,${alpha * 0.85})`
+        ctx.fillStyle = s.gold ? `rgba(106,226,170,${alpha})` : `rgba(244,239,228,${alpha * 0.85})`
         ctx.beginPath()
         ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2)
         ctx.fill()
@@ -68,8 +70,8 @@ export default function Starfield() {
           const tail = 70
           const len = Math.hypot(s.vx, s.vy)
           const grad = ctx.createLinearGradient(s.x, s.y, s.x - (s.vx / len) * tail, s.y - (s.vy / len) * tail)
-          grad.addColorStop(0, `rgba(226,190,106,${0.9 * fade})`)
-          grad.addColorStop(1, 'rgba(226,190,106,0)')
+          grad.addColorStop(0, `rgba(106,226,170,${0.9 * fade})`)
+          grad.addColorStop(1, 'rgba(106,226,170,0)')
           ctx.strokeStyle = grad
           ctx.lineWidth = 1.5
           ctx.beginPath()
@@ -81,12 +83,43 @@ export default function Starfield() {
       }
     }
 
+    function drawStatic() {
+      ctx.clearRect(0, 0, width, height)
+      for (const s of stars) {
+        ctx.fillStyle = s.gold ? 'rgba(106,226,170,0.65)' : 'rgba(244,239,228,0.55)'
+        ctx.beginPath()
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2)
+        ctx.fill()
+      }
+    }
+
+    function syncMotion() {
+      const next = prefersReduced()
+      if (next === reduce) return
+      reduce = next
+      if (reduce) {
+        cancelAnimationFrame(raf)
+        raf = 0
+        drawStatic()
+      } else {
+        last = performance.now()
+        nextShooter = last + 2500
+        raf = requestAnimationFrame(draw)
+      }
+    }
+
     resize()
-    raf = requestAnimationFrame(draw)
+    if (reduce) drawStatic()
+    else raf = requestAnimationFrame(draw)
     window.addEventListener('resize', resize)
+    media.addEventListener?.('change', syncMotion)
+    const observer = new MutationObserver(syncMotion)
+    observer.observe(document.body, { attributes: true, attributeFilter: ['class'] })
     return () => {
       cancelAnimationFrame(raf)
       window.removeEventListener('resize', resize)
+      media.removeEventListener?.('change', syncMotion)
+      observer.disconnect()
     }
   }, [])
 

@@ -1,26 +1,44 @@
-<svg width="180" height="180" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <style>
-    @media (prefers-color-scheme: light) {
-      .background { fill: black; }
-      .foreground { fill: white; }
-    }
-    @media (prefers-color-scheme: dark) {
-      .background { fill: white; }
-      .foreground { fill: black; }
-    }
-  </style>
-  <g clip-path="url(#clip0_7960_43945)">
-    <rect class="background" width="180" height="180" rx="37" />
-    <g style="transform: scale(95%); transform-origin: center">
-      <path class="foreground"
-        d="M101.141 53H136.632C151.023 53 162.689 64.6662 162.689 79.0573V112.904H148.112V79.0573C148.112 78.7105 148.098 78.3662 148.072 78.0251L112.581 112.898C112.701 112.902 112.821 112.904 112.941 112.904H148.112V126.672H112.941C98.5504 126.672 86.5638 114.891 86.5638 100.5V66.7434H101.141V100.5C101.141 101.15 101.191 101.792 101.289 102.422L137.56 66.7816C137.255 66.7563 136.945 66.7434 136.632 66.7434H101.141V53Z" />
-      <path class="foreground"
-        d="M65.2926 124.136L14 66.7372H34.6355L64.7495 100.436V66.7372H80.1365V118.47C80.1365 126.278 70.4953 129.958 65.2926 124.136Z" />
-    </g>
-  </g>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120" aria-hidden="true" role="img">
   <defs>
-    <clipPath id="clip0_7960_43945">
-      <rect width="180" height="180" fill="white" />
-    </clipPath>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0E1E2E" />
+      <stop offset="100%" stop-color="#07121C" />
+    </linearGradient>
+    <linearGradient id="shellGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3A86FF" />
+      <stop offset="100%" stop-color="#225AC2" />
+    </linearGradient>
+    <linearGradient id="turtleSkin" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6AE2AA" />
+      <stop offset="100%" stop-color="#52B788" />
+    </linearGradient>
   </defs>
+
+  <rect width="120" height="120" rx="28" fill="url(#bgGrad)" stroke="#1D3D50" stroke-width="2" />
+  <circle cx="60" cy="62" r="38" fill="#3A86FF" opacity="0.15" filter="blur(8px)" />
+
+  <ellipse cx="38" cy="80" rx="9" ry="6" fill="url(#turtleSkin)" transform="rotate(-25 38 80)" />
+  <ellipse cx="82" cy="80" rx="9" ry="6" fill="url(#turtleSkin)" transform="rotate(25 82 80)" />
+  <ellipse cx="32" cy="54" rx="11" ry="7" fill="url(#turtleSkin)" transform="rotate(35 32 54)" />
+  <ellipse cx="88" cy="54" rx="11" ry="7" fill="url(#turtleSkin)" transform="rotate(-35 88 54)" />
+  <path d="M 57 88 Q 60 96 63 88 Z" fill="url(#turtleSkin)" />
+
+  <ellipse cx="60" cy="38" rx="14" ry="13" fill="url(#turtleSkin)" />
+
+  <ellipse cx="54" cy="36" rx="2.5" ry="3.5" fill="#07121C" />
+  <circle cx="53" cy="35" r="1.2" fill="#FFFFFF" />
+  <ellipse cx="66" cy="36" rx="2.5" ry="3.5" fill="#07121C" />
+  <circle cx="65" cy="35" r="1.2" fill="#FFFFFF" />
+
+  <ellipse cx="51" cy="41" rx="2.2" ry="1.4" fill="#FF8A8A" opacity="0.65" />
+  <ellipse cx="69" cy="41" rx="2.2" ry="1.4" fill="#FF8A8A" opacity="0.65" />
+  <path d="M 58 42 Q 60 44 62 42" stroke="#07121C" stroke-width="1.2" stroke-linecap="round" fill="none" />
+
+  <ellipse cx="60" cy="64" rx="24" ry="22" fill="url(#shellGrad)" stroke="#6EA5FF" stroke-width="2" />
+  <circle cx="60" cy="64" r="9" fill="#0E1E2E" stroke="#52B788" stroke-width="2" />
+  <circle cx="60" cy="62" r="2.5" fill="#52B788" />
+  <polygon points="58.5,63 61.5,63 62,68 58,68" fill="#52B788" />
+
+  <path d="M 86 32 Q 86 36 90 36 Q 86 36 86 40 Q 86 36 82 36 Q 86 36 86 32 Z" fill="#6AE2AA" />
+  <circle cx="34" cy="36" r="1.8" fill="#6EA5FF" />
 </svg>
