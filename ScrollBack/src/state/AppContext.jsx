@@ -62,6 +62,7 @@ function reducer(state, action) {
 }
 
 const AppContext = createContext(null)
+
 let toastId = 0
 let coinId = 0
 
@@ -146,7 +147,7 @@ export function AppProvider({ children }) {
         if (err.status === 401) {
           dispatch({ type: 'SIGNED_OUT' })
         } else {
-          notify({ tone: 'error', title: 'That didn\u2019t work', message: err.message })
+          notify({ tone: 'error', title: 'That didn’t work', message: err.message })
         }
         return null
       }
